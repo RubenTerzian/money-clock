@@ -15,7 +15,7 @@ function formatTime(seconds) {
 
 function updateEarnings() {
     earnings = (elapsedTime / 3600) * hourlyWage;
-    document.getElementById("earnings").innerText = 'You have earned: $${earnings.toFixed(2)};
+    document.getElementById("earnings").innerText = 'You have earned: $${earnings.toFixed(2)}';
     document.title = '$${earnings.toFixed(2)}';
 }
 
@@ -24,6 +24,7 @@ function updateTimer() {
 }
 
 function toggleTimer() {
+    console.log("toggle timer clicked...");
     if (running) {
         clearInterval(intervalId);
         document.getElementById("playPauseButton").innerText = "Start";
@@ -31,7 +32,7 @@ function toggleTimer() {
         intervalId = setInterval(() => {
             elapsedTime++;
             updateEarnings();
-            updatetimer();
+            updateTimer();
         }, 1000);
         document.getElementById("playPauseButton").innerText = "Pause";
     }
@@ -39,7 +40,8 @@ function toggleTimer() {
 }
 
 function editWage() {
-    const newWage = parseFloat(prompt("Enter your hourly wage:)) || 0;
+    console.log("edit wage clicked...");
+    const newWage = parseFloat(prompt("Enter your hourly wage:")) || 0;
     hourlyWage = newWage;
     elapsedTime = 0;
     earnings = 0;
