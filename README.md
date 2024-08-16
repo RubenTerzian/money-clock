@@ -12,3 +12,4 @@ A basic website that shows how much you've earned while it is running.
 7) Add goals / animations / graphics
 8) Add profiles buttons to see how much certain people make (billionares, teachers, etc)
 9) Add little footer with works to my stuff and a donate button
+10) Host website online!! (maybe use render.com ?)
