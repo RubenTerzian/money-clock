@@ -1,4 +1,4 @@
-console.log("script running...");
+console.log("script.js loaded...");
 
 let hourlyWage = parseFloat(prompt("Enter your hourly wage:")) || 0;
 let earnings = 0;
@@ -10,13 +10,13 @@ function formatTime(seconds) {
     const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
     const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
     const secs = (seconds % 60).toString().padStart(2, '0');
-    return '${hrs}:${mins}:${secs}';
+    return `${hrs}:${mins}:${secs}`;
 }
 
 function updateEarnings() {
     earnings = (elapsedTime / 3600) * hourlyWage;
-    document.getElementById("earnings").innerText = 'You have earned: $${earnings.toFixed(2)}';
-    document.title = '$${earnings.toFixed(2)}';
+    document.getElementById("earnings").innerText = `You have earned: $${earnings.toFixed(2)}`;
+    document.title = `$${earnings.toFixed(2)}`;
 }
 
 function updateTimer() {
@@ -49,7 +49,7 @@ function editWage() {
     updateTimer();
 }
 
-document.getElementById("playPaseButton").addEventListener("click", toggleTimer);
+document.getElementById("playPauseButton").addEventListener("click", toggleTimer);
 document.getElementById("editIncomeButton").addEventListener("click", editWage);
 
 updateEarnings();
