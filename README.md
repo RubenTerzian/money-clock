@@ -13,4 +13,4 @@ A basic website that shows how much you've earned while it is running.
 8) Add profiles buttons to see how much certain people make (billionares, teachers, national debt, etc)
 9) Add little footer with works to my stuff and a donate button
 10) Rename to time-is-money
-10) Host website online!! (maybe use render.com ?)
+11) Host website online!! (maybe use render.com ?)
