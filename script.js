@@ -44,23 +44,49 @@ function showEditModal() {
     document.getElementById('editModal').style.display = 'flex';
 }
 
+// Convert hourly wage to annual salary and update the corresponding field
+function updateAnnualSalary() {
+    const hourlyWage = parseFloat(document.getElementById('wageInput').value) || 0;
+    const annualSalary = hourlyWage * 52 * 40;  // Assuming 40 hours per week and 52 weeks per year
+    document.getElementById('annualSalaryInput').value = annualSalary.toFixed(2);
+}
+
+// Convert annual salary to hourly wage and update the corresponding field
+function updateHourlyWage() {
+    const annualSalary = parseFloat(document.getElementById('annualSalaryInput').value) || 0;
+    const hourlyWage = annualSalary / (52 * 40);  // Assuming 40 hours per week and 52 weeks per year
+    document.getElementById('wageInput').value = hourlyWage.toFixed(2);
+}
+
 // Handle form submission
 function handleEditFormSubmit(event) {
     event.preventDefault();
     
     const newTitle = document.getElementById('titleInput').value;
-    const newWage = parseFloat(document.getElementById('wageInput').value) || 0;
+    const newHourlyWage = parseFloat(document.getElementById('wageInput').value) || 0;
+    const annualSalary = parseFloat(document.getElementById('annualSalaryInput').value) || 0;
     
     if (newTitle) {
         document.querySelector('h1').innerText = newTitle;  // Change the title if a value is provided
     }
     
-    hourlyWage = newWage;
+    if (annualSalary > 0) {
+        hourlyWage = annualSalary / (52 * 40);  // Update hourly wage
+    } else {
+        hourlyWage = newHourlyWage;
+        updateAnnualSalary();  // Update annual salary field
+    }
+    
     updateEarnings();  // Update earnings based on the new wage
     
     // Hide the modal after submission
     document.getElementById('editModal').style.display = 'none';
 }
+
+// Add event listeners to input fields
+document.getElementById('wageInput').addEventListener('input', updateAnnualSalary);
+document.getElementById('annualSalaryInput').addEventListener('input', updateHourlyWage);
+
 
 // Handle cancel button
 function handleCancelButton() {
