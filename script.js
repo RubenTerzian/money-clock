@@ -39,18 +39,61 @@ function toggleTimer() {
     running = !running;
 }
 
-function editWage() {
-    console.log("edit wage clicked...");
-    const newWage = parseFloat(prompt("Enter your hourly wage:")) || 0;
-    hourlyWage = newWage;
-    elapsedTime = 0;
-    earnings = 0;
-    updateEarnings();
-    updateTimer();
+// Show modal for editing information
+function showEditModal() {
+    document.getElementById('editModal').style.display = 'flex';
 }
+
+// Handle form submission
+function handleEditFormSubmit(event) {
+    event.preventDefault();
+    
+    const newTitle = document.getElementById('titleInput').value;
+    const newWage = parseFloat(document.getElementById('wageInput').value) || 0;
+    
+    if (newTitle) {
+        document.querySelector('h1').innerText = newTitle;  // Change the title if a value is provided
+    }
+    
+    hourlyWage = newWage;
+    updateEarnings();  // Update earnings based on the new wage
+    
+    // Hide the modal after submission
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Handle cancel button
+function handleCancelButton() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Set up event listeners
+document.getElementById('editIncomeButton').addEventListener('click', showEditModal);
+document.getElementById('editForm').addEventListener('submit', handleEditFormSubmit);
+document.getElementById('cancelButton').addEventListener('click', handleCancelButton);
+
+
+function resetEarnings() {
+    const confirmReset = confirm("Are you sure you want to reset your earnings to 0?");
+    if (confirmReset) {
+        console.log("reset earnings confirmed...");
+        previousEarnings = 0;  // Reset previous earnings
+        earnings = 0;  // Reset current earnings
+        elapsedTime = 0;  // Reset elapsed time
+        updateEarnings();  // Update earnings display
+        updateTimer();  // Reset timer display
+    } else {
+        console.log("reset earnings cancelled...");
+    }
+}
+document.getElementById("resetButton").addEventListener("click", resetEarnings);
+
+
+
 
 document.getElementById("playPauseButton").addEventListener("click", toggleTimer);
 document.getElementById("editIncomeButton").addEventListener("click", editWage);
+document.getElementById("resetButton").addEventListener("click", resetEarnings); 
 
 updateEarnings();
 updateTimer();

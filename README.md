@@ -6,10 +6,10 @@ A basic website that shows how much you've earned while it is running.
 - [x] Remove pop-up when first opening the site
 ---
 - [ ] Add annual salary option in the income input
-- [ ] Allow user to update salary without reseting counter
-- [ ] Add reset button
+- [ ] Allow user to update salary without resetting counter
+- [x] Add reset button
 ---
-- [ ] Rename "edit income" button to "edit" and allow Name to be edited
+- [x] Rename "edit income" button to "edit" and allow Name to be edited
 - [ ] Add option to add (delete, favorite for title) multiple cards to compare different incomes
 ---
 - [ ] Save progress if the tab is closed using cookies so you can keep counting

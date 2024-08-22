@@ -49,6 +49,54 @@ button {
     border: none;
 }
 
+#resetButton {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
 button:hover {
     opacity:0.8;
 }
+
+#editModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#modalContent {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#modalContent form {
+    display: flex;
+    flex-direction: column;
+}
+
+#modalContent label {
+    margin: 10px 0 5px;
+}
+
+#modalContent input {
+    margin-bottom: 10px;
+    padding: 8px;
+    font-size: 1em;
+}
+
+#modalContent button {
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
