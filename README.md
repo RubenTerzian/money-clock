@@ -2,7 +2,7 @@
 A basic website that shows how much you've earned while it is running.
 
 ## TODO
-- [ ] Re-order the TODOs
+- [x] Re-order the TODOs
 - [ ] Remove pop-up when first opening the site
 
 - [ ] Add annual salary option in the income input
