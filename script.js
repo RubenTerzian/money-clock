@@ -1,6 +1,6 @@
 console.log("script.js loaded...");
 
-let hourlyWage = parseFloat(prompt("Enter your hourly wage:")) || 0;
+let hourlyWage = 0;
 let earnings = 0;
 let elapsedTime = 0;
 let running = false;
