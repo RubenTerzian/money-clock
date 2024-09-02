@@ -6,14 +6,14 @@ A basic website that shows how much you've earned while it is running.
 - [x] Remove pop-up when first opening the site
 ---
 - [x] Add annual salary option in the income input
-- [ ] Allow user to update salary without resetting counter
+- [x] Allow user to update salary without resetting counter
 - [x] Add reset button
 ---
 - [x] Rename "edit income" button to "edit" and allow Name to be edited
 - [ ] Add option to add (and delete, and favorite) multiple cards to compare different incomes
 ---
 - [ ] Save progress if the tab is closed using cookies so you can keep counting
-- [ ] Does it lag for a tiny bit when you click out of the tab?
+- [x] Does it lag for a tiny bit when you click out of the tab?
 ---
 - [ ] Make it prettier
 - [ ] Add goals / animations / graphics ? 

@@ -2,7 +2,9 @@ console.log("script.js loaded...");
 
 let hourlyWage = 0;
 let earnings = 0;
+let previousEarnings = 0;
 let elapsedTime = 0;
+let lastWageUpdateTime = 0; 
 let running = false;
 let intervalId;
 
@@ -14,10 +16,20 @@ function formatTime(seconds) {
 }
 
 function updateEarnings() {
-    earnings = (elapsedTime / 3600) * hourlyWage;
+    // Earnings from before the last wage update
+    const earningsBeforeUpdate = previousEarnings;
+    
+    // Earnings from after the last wage update
+    const timeSinceLastUpdate = elapsedTime - lastWageUpdateTime;
+    const earningsAfterUpdate = (timeSinceLastUpdate / 3600) * hourlyWage;
+
+    // Total earnings is the sum of both
+    earnings = earningsBeforeUpdate + earningsAfterUpdate;
+
     document.getElementById("earnings").innerText = `You have earned: $${earnings.toFixed(2)}`;
     document.title = `$${earnings.toFixed(2)}`;
 }
+
 
 function updateTimer() {
     document.getElementById("time").innerText = formatTime(elapsedTime);
@@ -66,22 +78,30 @@ function handleEditFormSubmit(event) {
     const newHourlyWage = parseFloat(document.getElementById('wageInput').value) || 0;
     const annualSalary = parseFloat(document.getElementById('annualSalaryInput').value) || 0;
     
+    // Accumulate earnings based on the time since the last wage update
+    const timeSinceLastUpdate = elapsedTime - lastWageUpdateTime;
+    previousEarnings += (timeSinceLastUpdate / 3600) * hourlyWage;
+
+    // Update the last wage update time
+    lastWageUpdateTime = elapsedTime;
+
     if (newTitle) {
-        document.querySelector('h1').innerText = newTitle;  // Change the title if a value is provided
+        document.querySelector('h1').innerText = newTitle;
     }
     
     if (annualSalary > 0) {
-        hourlyWage = annualSalary / (52 * 40);  // Update hourly wage
+        hourlyWage = annualSalary / (52 * 40);
     } else {
         hourlyWage = newHourlyWage;
-        updateAnnualSalary();  // Update annual salary field
+        updateAnnualSalary();
     }
-    
-    updateEarnings();  // Update earnings based on the new wage
-    
+
+    updateEarnings();  // Update earnings with the new wage
+
     // Hide the modal after submission
     document.getElementById('editModal').style.display = 'none';
 }
+
 
 // Add event listeners to input fields
 document.getElementById('wageInput').addEventListener('input', updateAnnualSalary);
