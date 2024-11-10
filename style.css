@@ -32,22 +32,21 @@ body {
     left: 20px;
 }
 
-/* Style for Material-UI Settings Icon */
+/* Settings Icon Positioning */
 #settingsIcon {
-    font-size: 30px;
+    position: fixed;
+    bottom: 10px; /* Adjust to be on top of the footer */
+    left: 20px; /* Positioned 20px from the left */
     background-color: #ccc;
     color: #000;
-    border-radius: 50%;
     padding: 10px;
+    border-radius: 50%;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
+    z-index: 2; /* Ensures it is layered on top of the footer */
 }
 
 #settingsIcon:hover {
-    background-color: #bbb;
+    background-color: #999;
 }
 
 /* Modal Styling */
@@ -92,5 +91,28 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    background-color: #f5f5f5; /* Light theme */
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    color: #000;
+    font-size: 0.9rem;
+    z-index: 1; /* Ensure footer stays at the bottom */
+}
+
+footer a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
 }
 
