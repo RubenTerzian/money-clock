@@ -5,41 +5,11 @@ let moneyEarned = 0;
 let incomeStartTime = 0; // Time when income was last updated
 let intervalId = null;
 let isRunning = false; // Flag to track if the stopwatch is running
+let lastSavedTime = 0; // To track when the page was last saved
 
 const earnedDisplay = document.getElementById('earned');
 const timeElapsedDisplay = document.getElementById('timeElapsed');
 const title = document.querySelector('title');
-
-// Modal Elements
-const incomeModal = document.getElementById('incomeModal');
-const settingsModal = document.getElementById('settingsModal');
-const incomeInput = document.getElementById('incomeInput');
-const incomeTypeSelect = document.getElementById('incomeType');
-const startBtn = document.getElementById('startBtn');
-const incomeEdit = document.getElementById('incomeEdit');
-const incomeTypeEdit = document.getElementById('incomeTypeEdit');
-const saveBtn = document.getElementById('saveBtn');
-const resetBtn = document.getElementById('resetBtn');
-const settingsIcon = document.getElementById('settingsIcon');
-const startStopIcon = document.getElementById('startStopIcon');
-
-// Load saved state from localStorage
-function loadState() {
-    const savedIncome = localStorage.getItem('income');
-    const savedIncomeType = localStorage.getItem('incomeType');
-    const savedEarnings = localStorage.getItem('moneyEarned');
-    const savedElapsedTime = localStorage.getItem('secondsElapsed');
-    const savedIncomeStartTime = localStorage.getItem('incomeStartTime');
-
-    if (savedIncome && savedIncomeType && savedEarnings && savedElapsedTime) {
-        income = parseFloat(savedIncome);
-        incomeType = savedIncomeType;
-        moneyEarned = parseFloat(savedEarnings);
-        secondsElapsed = parseInt(savedElapsedTime);
-        incomeStartTime = parseInt(savedIncomeStartTime);
-        updateDisplay();
-    }
-}
 
 // Save state to localStorage
 function saveState() {
@@ -48,28 +18,51 @@ function saveState() {
     localStorage.setItem('moneyEarned', moneyEarned);
     localStorage.setItem('secondsElapsed', secondsElapsed);
     localStorage.setItem('incomeStartTime', incomeStartTime);
+    localStorage.setItem('lastSavedTime', Date.now()); // Save the current timestamp as last saved time
+    console.log("State saved at " + new Date().toLocaleTimeString());
 }
 
-// Function to calculate hourly rate based on income type
-function getHourlyRate() {
-    return incomeType === 'hourly' ? income : income / 2080; // Convert annual to hourly
+// Set an interval to save the state every 2 seconds
+const saveIntervalId = setInterval(saveState, 2000);
+
+// Load saved state from localStorage
+function loadState() {
+    const savedIncome = localStorage.getItem('income');
+    const savedIncomeType = localStorage.getItem('incomeType');
+    const savedEarnings = localStorage.getItem('moneyEarned');
+    const savedElapsedTime = localStorage.getItem('secondsElapsed');
+    const savedIncomeStartTime = localStorage.getItem('incomeStartTime');
+    const savedLastSavedTime = localStorage.getItem('lastSavedTime');
+
+    if (savedIncome && savedIncomeType && savedEarnings && savedElapsedTime) {
+        income = parseFloat(savedIncome);
+        incomeType = savedIncomeType;
+        moneyEarned = parseFloat(savedEarnings);
+        secondsElapsed = parseInt(savedElapsedTime);
+        incomeStartTime = parseInt(savedIncomeStartTime);
+        lastSavedTime = parseInt(savedLastSavedTime); // Get the last saved timestamp
+        updateDisplay();  // Update UI with saved state
+
+        // Calculate time elapsed since the last save and update moneyEarned
+        if (lastSavedTime > 0) {
+            const currentTime = Date.now();
+            const elapsedTimeSinceLastSave = Math.floor((currentTime - lastSavedTime) / 1000); // Time in seconds
+            secondsElapsed += elapsedTimeSinceLastSave; // Add elapsed time to secondsElapsed
+            calculateEarnings(); // Recalculate earnings based on the time elapsed
+        }
+
+        // If there's an ongoing session, start the stopwatch
+        if (savedElapsedTime > 0 && incomeStartTime < savedElapsedTime) {
+            startStopwatch();
+        }
+    }
 }
 
-// Function to calculate earnings since last income update
-function calculateEarnings() {
-    let currentTime = secondsElapsed;
-    let timeSinceLastUpdate = currentTime - incomeStartTime; // Time since last income change
-    let hourlyRate = getHourlyRate();
-
-    // Only add money earned since last income change
-    moneyEarned += (hourlyRate * (timeSinceLastUpdate / 3600));
-    incomeStartTime = currentTime; // Reset the start time after update
-
-    // Update display
+// Function to update the display
+function updateDisplay() {
     earnedDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
+    timeElapsedDisplay.textContent = formatTime(secondsElapsed);
     title.textContent = `$${moneyEarned.toFixed(2)}`;
-
-    saveState(); // Save state regularly
 }
 
 // Function to format time
@@ -82,20 +75,44 @@ function formatTime(seconds) {
 
 // Start the stopwatch
 function startStopwatch() {
+    if (isRunning) return; // Prevent starting if already running
+
     isRunning = true; // Set running flag
     intervalId = setInterval(() => {
         secondsElapsed++;
         timeElapsedDisplay.textContent = formatTime(secondsElapsed);
         calculateEarnings();
     }, 1000);
+
     startStopIcon.textContent = 'pause'; // Change icon to 'pause' when running
 }
 
 // Stop the stopwatch
 function stopStopwatch() {
     isRunning = false; // Set running flag to false
-    clearInterval(intervalId);
+    clearInterval(intervalId); // Stop the interval
     startStopIcon.textContent = 'play_arrow'; // Change icon to 'play' when stopped
+}
+
+// Function to calculate earnings
+function calculateEarnings() {
+    let currentTime = secondsElapsed;
+    let timeSinceLastUpdate = currentTime - incomeStartTime; // Time since last income change
+    let hourlyRate = getHourlyRate();
+
+    // Only add money earned since last income change
+    moneyEarned += (hourlyRate * (timeSinceLastUpdate / 3600));
+    incomeStartTime = currentTime; // Reset the start time after update
+
+    // Update display
+    earnedDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
+    title.textContent = `$${moneyEarned.toFixed(2)}`;
+    saveState(); // Save state regularly
+}
+
+// Function to calculate hourly rate based on income type
+function getHourlyRate() {
+    return incomeType === 'hourly' ? income : income / 2080; // Convert annual to hourly
 }
 
 // Toggle the stopwatch when the start/stop button is clicked
@@ -106,13 +123,6 @@ startStopIcon.addEventListener('click', () => {
         startStopwatch(); // Start if it's stopped
     }
 });
-
-// Update the display with current earnings and time
-function updateDisplay() {
-    earnedDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
-    timeElapsedDisplay.textContent = formatTime(secondsElapsed);
-    title.textContent = `$${moneyEarned.toFixed(2)}`;
-}
 
 // Event listener to start stopwatch when the user enters income
 startBtn.addEventListener('click', () => {
