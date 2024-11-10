@@ -4,6 +4,7 @@ let secondsElapsed = 0;
 let moneyEarned = 0;
 let incomeStartTime = 0; // Time when income was last updated
 let intervalId = null;
+let isRunning = false; // Flag to track if the stopwatch is running
 
 const earnedDisplay = document.getElementById('earned');
 const timeElapsedDisplay = document.getElementById('timeElapsed');
@@ -20,6 +21,7 @@ const incomeTypeEdit = document.getElementById('incomeTypeEdit');
 const saveBtn = document.getElementById('saveBtn');
 const resetBtn = document.getElementById('resetBtn');
 const settingsIcon = document.getElementById('settingsIcon');
+const startStopIcon = document.getElementById('startStopIcon');
 
 // Load saved state from localStorage
 function loadState() {
@@ -80,12 +82,30 @@ function formatTime(seconds) {
 
 // Start the stopwatch
 function startStopwatch() {
+    isRunning = true; // Set running flag
     intervalId = setInterval(() => {
         secondsElapsed++;
         timeElapsedDisplay.textContent = formatTime(secondsElapsed);
         calculateEarnings();
     }, 1000);
+    startStopIcon.textContent = 'pause'; // Change icon to 'pause' when running
 }
+
+// Stop the stopwatch
+function stopStopwatch() {
+    isRunning = false; // Set running flag to false
+    clearInterval(intervalId);
+    startStopIcon.textContent = 'play_arrow'; // Change icon to 'play' when stopped
+}
+
+// Toggle the stopwatch when the start/stop button is clicked
+startStopIcon.addEventListener('click', () => {
+    if (isRunning) {
+        stopStopwatch(); // Stop if it's running
+    } else {
+        startStopwatch(); // Start if it's stopped
+    }
+});
 
 // Update the display with current earnings and time
 function updateDisplay() {
@@ -98,7 +118,7 @@ function updateDisplay() {
 startBtn.addEventListener('click', () => {
     income = parseFloat(incomeInput.value);
     incomeType = incomeTypeSelect.value;
-    if (isNaN(income) || income <= 0) {
+    if (isNaN(income)) {
         alert('Please enter a valid income.');
     } else {
         incomeModal.style.display = 'none';
@@ -146,7 +166,8 @@ resetBtn.addEventListener('click', () => {
     title.textContent = '$0.00';
     settingsModal.style.display = 'none';
     incomeStartTime = 0; // Reset income start time
-    startStopwatch();
+    isRunning = false; // Reset running flag
+    startStopIcon.textContent = 'play_arrow'; // Set the icon back to 'play'
 });
 
 // Close modal on click outside content

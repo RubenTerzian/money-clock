@@ -25,6 +25,24 @@ body {
     color: #888;
 }
 
+#startStop {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+#startStopIcon {
+    position: fixed;
+    bottom: 10px; 
+    right: 20px; 
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 2; /* Ensures it is layered on top of the footer */
+}
+
 /* Settings Icon */
 #settings {
     position: absolute;
