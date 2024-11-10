@@ -150,3 +150,52 @@ window.onload = function() {
 window.onbeforeunload = function() {
     saveState();
 };
+
+// Open settings modal when settings icon is clicked
+settingsIcon.addEventListener('click', () => {
+    settingsModal.style.display = 'block';
+});
+
+// Save settings and close modal when save button is clicked
+saveBtn.addEventListener('click', () => {
+    income = parseFloat(incomeEdit.value);
+    incomeType = incomeTypeEdit.value;
+    if (isNaN(income)) {
+        alert('Please enter a valid income.');
+    } else {
+        settingsModal.style.display = 'none';
+        incomeStartTime = secondsElapsed; // Update income start time
+        saveState(); // Save the updated settings to localStorage
+    }
+});
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    if (event.target === settingsModal) {
+        settingsModal.style.display = 'none';
+    }
+};
+
+// Event listener for the reset button in the settings modal
+resetBtn.addEventListener('click', () => {
+    // Reset all relevant values to their initial state
+    moneyEarned = 0;
+    secondsElapsed = 0;
+    incomeStartTime = 0;
+    isRunning = false; // Stop the stopwatch
+
+    // Clear the stopwatch interval
+    clearInterval(intervalId);
+    intervalId = null;
+
+    // Update the display and save the reset state
+    updateDisplay();
+    saveState();
+
+    // Update the start/stop button icon to 'play_arrow' since the stopwatch is stopped
+    startStopIcon.textContent = 'play_arrow';
+
+    // Hide the settings modal after resetting
+    settingsModal.style.display = 'none';
+});
+
