@@ -1,46 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Language" content="en">
-    <title>Money Clock</title>
+    <title>$0.00</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-</head>
 <body>
+
     <div id="container">
-        <h1>Money Clock</h1>
-        <div id="stopwatch">
-            <div id="earnings">You have earned $0.00</div>
-            <div id="time">00:00:00</div>
-            <div>
-                <button id="playPauseButton">Start</button>
-                <button id="editIncomeButton">Edit</button>
-                <button id="resetButton">Reset</button>
-            </div>
-        </div>
-     </div>
-
-     <div id="editModal" style="display: none;">
-        <div id="modalContent">
-            <h2>Edit Information</h2>
-            <form id="editForm">
-                <label for="titleInput">New Title:</label>
-                <input type="text" id="titleInput" placeholder="Enter new title">
-    
-                <label for="wageInput">Hourly Wage:</label>
-                <input type="number" id="wageInput" step="0.01" placeholder="Enter hourly wage">
-
-                <label for="annualSalaryInput">Annual Salary:</label>
-                <input type="number" id="annualSalaryInput" step="0.01" placeholder="Enter annual salary">
-    
-                <button type="submit">Submit</button>
-                <button type="button" id="cancelButton">Cancel</button>
-            </form>
+        <div id="earned">$0.00</div>
+        <div id="timeElapsed">00:00:00</div>
+        <div id="settings">
+            <!-- Material UI Settings Icon -->
+            <span class="material-icons" id="settingsIcon">settings</span>
         </div>
     </div>
+
+    <!-- Income Modal -->
+    <div id="incomeModal" class="modal">
+        <div class="modal-content">
+            <label for="incomeInput">Enter your hourly or annual income:</label>
+            <input type="number" id="incomeInput" placeholder="Income" required>
+            <select id="incomeType">
+                <option value="hourly">Hourly</option>
+                <option value="annual">Annual</option>
+            </select>
+            <button id="startBtn">Start</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <label for="incomeEdit">Edit your income:</label>
+            <input type="number" id="incomeEdit" placeholder="Income">
+            <select id="incomeTypeEdit">
+                <option value="hourly">Hourly</option>
+                <option value="annual">Annual</option>
+            </select>
+            <button id="saveBtn">Save</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
-<script src="script.js"></script>
 </html>

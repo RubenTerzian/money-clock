@@ -1,145 +1,129 @@
-console.log("script.js loaded...");
+let income = 0;
+let incomeType = 'hourly';
+let secondsElapsed = 0;
+let moneyEarned = 0;
+let incomeStartTime = 0; // Time when income was last updated
+let intervalId = null;
 
-let hourlyWage = 0;
-let earnings = 0;
-let previousEarnings = 0;
-let elapsedTime = 0;
-let lastWageUpdateTime = 0; 
-let running = false;
-let intervalId;
+const earnedDisplay = document.getElementById('earned');
+const timeElapsedDisplay = document.getElementById('timeElapsed');
+const title = document.querySelector('title');
 
+// Modal Elements
+const incomeModal = document.getElementById('incomeModal');
+const settingsModal = document.getElementById('settingsModal');
+const incomeInput = document.getElementById('incomeInput');
+const incomeTypeSelect = document.getElementById('incomeType');
+const startBtn = document.getElementById('startBtn');
+const incomeEdit = document.getElementById('incomeEdit');
+const incomeTypeEdit = document.getElementById('incomeTypeEdit');
+const saveBtn = document.getElementById('saveBtn');
+const resetBtn = document.getElementById('resetBtn');
+const settingsIcon = document.getElementById('settingsIcon');
+
+// Open income modal on page load
+window.onload = function() {
+    incomeModal.style.display = 'block';
+};
+
+// Function to calculate hourly rate based on income type
+function getHourlyRate() {
+    return incomeType === 'hourly' ? income : income / 2080; // Convert annual to hourly
+}
+
+// Function to calculate earnings since last income update
+function calculateEarnings() {
+    let currentTime = secondsElapsed;
+    let timeSinceLastUpdate = currentTime - incomeStartTime; // Time since last income change
+    let hourlyRate = getHourlyRate();
+
+    // Only add money earned since last income change
+    moneyEarned += (hourlyRate * (timeSinceLastUpdate / 3600));
+    incomeStartTime = currentTime; // Reset the start time after update
+
+    // Update display
+    earnedDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
+    title.textContent = `$${moneyEarned.toFixed(2)}`;
+}
+
+// Function to format time
 function formatTime(seconds) {
-    const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
-    const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-    const secs = (seconds % 60).toString().padStart(2, '0');
-    return `${hrs}:${mins}:${secs}`;
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
-function updateEarnings() {
-    // Earnings from before the last wage update
-    const earningsBeforeUpdate = previousEarnings;
-    
-    // Earnings from after the last wage update
-    const timeSinceLastUpdate = elapsedTime - lastWageUpdateTime;
-    const earningsAfterUpdate = (timeSinceLastUpdate / 3600) * hourlyWage;
-
-    // Total earnings is the sum of both
-    earnings = earningsBeforeUpdate + earningsAfterUpdate;
-
-    document.getElementById("earnings").innerText = `You have earned: $${earnings.toFixed(2)}`;
-    document.title = `$${earnings.toFixed(2)}`;
+// Start the stopwatch
+function startStopwatch() {
+    intervalId = setInterval(() => {
+        secondsElapsed++;
+        timeElapsedDisplay.textContent = formatTime(secondsElapsed);
+        calculateEarnings();
+    }, 1000);
 }
 
-
-function updateTimer() {
-    document.getElementById("time").innerText = formatTime(elapsedTime);
-}
-
-function toggleTimer() {
-    console.log("toggle timer clicked...");
-    if (running) {
-        clearInterval(intervalId);
-        document.getElementById("playPauseButton").innerText = "Start";
+// Event listener to start stopwatch when the user enters income
+startBtn.addEventListener('click', () => {
+    income = parseFloat(incomeInput.value);
+    incomeType = incomeTypeSelect.value;
+    if (isNaN(income) || income <= 0) {
+        alert('Please enter a valid income.');
     } else {
-        intervalId = setInterval(() => {
-            elapsedTime++;
-            updateEarnings();
-            updateTimer();
-        }, 1000);
-        document.getElementById("playPauseButton").innerText = "Pause";
+        incomeModal.style.display = 'none';
+        incomeStartTime = 0; // Reset income start time when starting
+        startStopwatch();
     }
-    running = !running;
-}
+});
 
-// Show modal for editing information
-function showEditModal() {
-    document.getElementById('editModal').style.display = 'flex';
-}
+// Event listener to open settings modal
+settingsIcon.addEventListener('click', () => {
+    settingsModal.style.display = 'block';
+    incomeEdit.value = income;
+    incomeTypeEdit.value = incomeType;
+});
 
-// Convert hourly wage to annual salary and update the corresponding field
-function updateAnnualSalary() {
-    const hourlyWage = parseFloat(document.getElementById('wageInput').value) || 0;
-    const annualSalary = hourlyWage * 52 * 40;  // Assuming 40 hours per week and 52 weeks per year
-    document.getElementById('annualSalaryInput').value = annualSalary.toFixed(2);
-}
-
-// Convert annual salary to hourly wage and update the corresponding field
-function updateHourlyWage() {
-    const annualSalary = parseFloat(document.getElementById('annualSalaryInput').value) || 0;
-    const hourlyWage = annualSalary / (52 * 40);  // Assuming 40 hours per week and 52 weeks per year
-    document.getElementById('wageInput').value = hourlyWage.toFixed(2);
-}
-
-// Handle form submission
-function handleEditFormSubmit(event) {
-    event.preventDefault();
+// Event listener to save new income without resetting earnings
+saveBtn.addEventListener('click', () => {
+    const newIncome = parseFloat(incomeEdit.value);
+    const newIncomeType = incomeTypeEdit.value;
     
-    const newTitle = document.getElementById('titleInput').value;
-    const newHourlyWage = parseFloat(document.getElementById('wageInput').value) || 0;
-    const annualSalary = parseFloat(document.getElementById('annualSalaryInput').value) || 0;
-    
-    // Accumulate earnings based on the time since the last wage update
-    const timeSinceLastUpdate = elapsedTime - lastWageUpdateTime;
-    previousEarnings += (timeSinceLastUpdate / 3600) * hourlyWage;
-
-    // Update the last wage update time
-    lastWageUpdateTime = elapsedTime;
-
-    if (newTitle) {
-        document.querySelector('h1').innerText = newTitle;
-    }
-    
-    if (annualSalary > 0) {
-        hourlyWage = annualSalary / (52 * 40);
+    if (isNaN(newIncome) || newIncome <= 0) {
+        alert('Please enter a valid income.');
     } else {
-        hourlyWage = newHourlyWage;
-        updateAnnualSalary();
+        // Calculate the money earned so far with the previous income rate before changing it
+        calculateEarnings();
+
+        // Now update the income and income type
+        income = newIncome;
+        incomeType = newIncomeType;
+
+        // Reset the incomeStartTime to prevent retroactive changes
+        incomeStartTime = secondsElapsed;
+
+        settingsModal.style.display = 'none';
     }
+});
 
-    updateEarnings();  // Update earnings with the new wage
+// Event listener to reset the stopwatch
+resetBtn.addEventListener('click', () => {
+    clearInterval(intervalId);
+    secondsElapsed = 0;
+    moneyEarned = 0;
+    earnedDisplay.textContent = '$0.00';
+    timeElapsedDisplay.textContent = '00:00:00';
+    title.textContent = '$0.00';
+    settingsModal.style.display = 'none';
+    incomeStartTime = 0; // Reset income start time
+    startStopwatch();
+});
 
-    // Hide the modal after submission
-    document.getElementById('editModal').style.display = 'none';
-}
-
-
-// Add event listeners to input fields
-document.getElementById('wageInput').addEventListener('input', updateAnnualSalary);
-document.getElementById('annualSalaryInput').addEventListener('input', updateHourlyWage);
-
-
-// Handle cancel button
-function handleCancelButton() {
-    document.getElementById('editModal').style.display = 'none';
-}
-
-// Set up event listeners
-document.getElementById('editIncomeButton').addEventListener('click', showEditModal);
-document.getElementById('editForm').addEventListener('submit', handleEditFormSubmit);
-document.getElementById('cancelButton').addEventListener('click', handleCancelButton);
-
-
-function resetEarnings() {
-    const confirmReset = confirm("Are you sure you want to reset your earnings to 0?");
-    if (confirmReset) {
-        console.log("reset earnings confirmed...");
-        previousEarnings = 0;  // Reset previous earnings
-        earnings = 0;  // Reset current earnings
-        elapsedTime = 0;  // Reset elapsed time
-        updateEarnings();  // Update earnings display
-        updateTimer();  // Reset timer display
-    } else {
-        console.log("reset earnings cancelled...");
+// Close modal on click outside content
+window.onclick = function(event) {
+    if (event.target === incomeModal) {
+        incomeModal.style.display = 'none';
     }
-}
-document.getElementById("resetButton").addEventListener("click", resetEarnings);
-
-
-
-
-document.getElementById("playPauseButton").addEventListener("click", toggleTimer);
-document.getElementById("editIncomeButton").addEventListener("click", editWage);
-document.getElementById("resetButton").addEventListener("click", resetEarnings); 
-
-updateEarnings();
-updateTimer();
+    if (event.target === settingsModal) {
+        settingsModal.style.display = 'none';
+    }
+};

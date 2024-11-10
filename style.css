@@ -1,102 +1,96 @@
+/* General Page Styling */
 body {
+    margin: 0;
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f4f4f4;
-    margin: 0;
+    background-color: #f5f5f5;
 }
 
 #container {
     text-align: center;
+}
+
+/* Display for Money Earned */
+#earned {
+    font-size: 4rem;
+    margin-bottom: 10px;
+}
+
+/* Display for Time Elapsed */
+#timeElapsed {
+    font-size: 1.5rem;
+    color: #888;
+}
+
+/* Settings Icon */
+#settings {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+/* Style for Material-UI Settings Icon */
+#settingsIcon {
+    font-size: 30px;
+    background-color: #ccc;
+    color: #000;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+#settingsIcon:hover {
+    background-color: #bbb;
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
     padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    width: 300px; /* Set a fixed width for the modal */
+    max-width: 90%; /* Ensure modal is responsive on smaller screens */
+    box-sizing: border-box; /* Include padding in the element's total width */
+    text-align: center;
 }
 
-#stopwatch {
-    margin-top: 20px;
-}
-
-#earnings {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-}
-
-#time {
-    font-size: 2em;
-    margin-bottom: 20px;
+/* Input and Button Styling in Modal */
+input, select, button {
+    width: 100%; /* Ensure inputs take full width of modal-content */
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
 button {
-    font-size: 1em;
-    padding: 10px;
-    margin: 5px;
     cursor: pointer;
-}
-
-#editIncomeButton {
     background-color: #007bff;
-    color: white;
+    color: #fff;
     border: none;
-}
-
-#playPauseButton {
-    background-color: #28a745;
-    color: white;
-    border: none;
-}
-
-#resetButton {
-    background-color: #dc3545;
-    color: white;
-    border: none;
+    border-radius: 5px;
 }
 
 button:hover {
-    opacity:0.8;
-}
-
-#editModal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#modalContent {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-#modalContent form {
-    display: flex;
-    flex-direction: column;
-}
-
-#modalContent label {
-    margin: 10px 0 5px;
-}
-
-#modalContent input {
-    margin-bottom: 10px;
-    padding: 8px;
-    font-size: 1em;
-}
-
-#modalContent button {
-    margin-top: 10px;
-    padding: 10px;
-    font-size: 1em;
-    cursor: pointer;
+    background-color: #0056b3;
 }
 
