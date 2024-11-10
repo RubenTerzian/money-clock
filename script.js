@@ -9,7 +9,17 @@ let lastSavedTime = 0; // To track when the page was last saved
 
 const earnedDisplay = document.getElementById('earned');
 const timeElapsedDisplay = document.getElementById('timeElapsed');
-const title = document.querySelector('title');
+const startStopIcon = document.getElementById('startStopIcon');
+const incomeInput = document.getElementById('incomeInput');
+const incomeTypeInput = document.getElementById('incomeType');
+const startBtn = document.getElementById('startBtn');
+const incomeModal = document.getElementById('incomeModal');
+const settingsIcon = document.getElementById('settingsIcon');
+const settingsModal = document.getElementById('settingsModal');
+const incomeEdit = document.getElementById('incomeEdit');
+const incomeTypeEdit = document.getElementById('incomeTypeEdit');
+const saveBtn = document.getElementById('saveBtn');
+const resetBtn = document.getElementById('resetBtn');
 
 // Save state to localStorage
 function saveState() {
@@ -19,11 +29,11 @@ function saveState() {
     localStorage.setItem('secondsElapsed', secondsElapsed);
     localStorage.setItem('incomeStartTime', incomeStartTime);
     localStorage.setItem('lastSavedTime', Date.now()); // Save the current timestamp as last saved time
-    console.log("State saved at " + new Date().toLocaleTimeString());
+    localStorage.setItem('isRunning', isRunning);
 }
 
-// Set an interval to save the state every 2 seconds
-const saveIntervalId = setInterval(saveState, 2000);
+// Set an interval to save the state every 1 second(s)
+const saveIntervalId = setInterval(saveState, 1000);
 
 // Load saved state from localStorage
 function loadState() {
@@ -33,6 +43,7 @@ function loadState() {
     const savedElapsedTime = localStorage.getItem('secondsElapsed');
     const savedIncomeStartTime = localStorage.getItem('incomeStartTime');
     const savedLastSavedTime = localStorage.getItem('lastSavedTime');
+    const savedIsRunning = localStorage.getItem('isRunning');
 
     if (savedIncome && savedIncomeType && savedEarnings && savedElapsedTime) {
         income = parseFloat(savedIncome);
@@ -40,20 +51,24 @@ function loadState() {
         moneyEarned = parseFloat(savedEarnings);
         secondsElapsed = parseInt(savedElapsedTime);
         incomeStartTime = parseInt(savedIncomeStartTime);
-        lastSavedTime = parseInt(savedLastSavedTime); // Get the last saved timestamp
-        updateDisplay();  // Update UI with saved state
+        lastSavedTime = parseInt(savedLastSavedTime);
+        updateDisplay();
 
         // Calculate time elapsed since the last save and update moneyEarned
-        if (lastSavedTime > 0) {
-            const currentTime = Date.now();
-            const elapsedTimeSinceLastSave = Math.floor((currentTime - lastSavedTime) / 1000); // Time in seconds
-            secondsElapsed += elapsedTimeSinceLastSave; // Add elapsed time to secondsElapsed
-            calculateEarnings(); // Recalculate earnings based on the time elapsed
-        }
+        if (savedIsRunning === 'true') {
+            if (lastSavedTime > 0) {
+                const currentTime = Date.now();
+                const elapsedTimeSinceLastSave = Math.floor((currentTime - lastSavedTime) / 1000); // Time in seconds
+                secondsElapsed += elapsedTimeSinceLastSave;
+                calculateEarnings();
+            }
 
-        // If there's an ongoing session, start the stopwatch
-        if (savedElapsedTime > 0 && incomeStartTime < savedElapsedTime) {
-            startStopwatch();
+            if (savedElapsedTime > 0) {
+                startStopwatch();
+            }
+        } else {
+            // make the start/stop button display 'play_arrow' if the stopwatch is not running
+            startStopIcon.textContent = 'play_arrow';
         }
     }
 }
@@ -62,7 +77,7 @@ function loadState() {
 function updateDisplay() {
     earnedDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
     timeElapsedDisplay.textContent = formatTime(secondsElapsed);
-    title.textContent = `$${moneyEarned.toFixed(2)}`;
+    document.title = `$${moneyEarned.toFixed(2)}`;
 }
 
 // Function to format time
@@ -75,135 +90,63 @@ function formatTime(seconds) {
 
 // Start the stopwatch
 function startStopwatch() {
-    if (isRunning) return; // Prevent starting if already running
-
-    isRunning = true; // Set running flag
+    if (isRunning) return;
+    isRunning = true;
     intervalId = setInterval(() => {
         secondsElapsed++;
         timeElapsedDisplay.textContent = formatTime(secondsElapsed);
         calculateEarnings();
     }, 1000);
-
-    startStopIcon.textContent = 'pause'; // Change icon to 'pause' when running
+    startStopIcon.textContent = 'pause';
 }
 
 // Stop the stopwatch
 function stopStopwatch() {
-    isRunning = false; // Set running flag to false
-    clearInterval(intervalId); // Stop the interval
-    startStopIcon.textContent = 'play_arrow'; // Change icon to 'play' when stopped
+    isRunning = false;
+    clearInterval(intervalId);
+    startStopIcon.textContent = 'play_arrow';
 }
 
-// Function to calculate earnings
+// Calculate earnings
 function calculateEarnings() {
-    let currentTime = secondsElapsed;
-    let timeSinceLastUpdate = currentTime - incomeStartTime; // Time since last income change
-    let hourlyRate = getHourlyRate();
-
-    // Only add money earned since last income change
+    let timeSinceLastUpdate = secondsElapsed - incomeStartTime;
+    let hourlyRate = incomeType === 'hourly' ? income : income / 2080;
     moneyEarned += (hourlyRate * (timeSinceLastUpdate / 3600));
-    incomeStartTime = currentTime; // Reset the start time after update
-
-    // Update display
-    earnedDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
-    title.textContent = `$${moneyEarned.toFixed(2)}`;
-    saveState(); // Save state regularly
+    incomeStartTime = secondsElapsed;
+    updateDisplay();
 }
 
-// Function to calculate hourly rate based on income type
-function getHourlyRate() {
-    return incomeType === 'hourly' ? income : income / 2080; // Convert annual to hourly
-}
-
-// Toggle the stopwatch when the start/stop button is clicked
+// Toggle start/stop button
 startStopIcon.addEventListener('click', () => {
     if (isRunning) {
-        stopStopwatch(); // Stop if it's running
+        stopStopwatch();
     } else {
-        startStopwatch(); // Start if it's stopped
+        startStopwatch();
     }
 });
 
-// Event listener to start stopwatch when the user enters income
+// Handle Start button in modal
 startBtn.addEventListener('click', () => {
     income = parseFloat(incomeInput.value);
-    incomeType = incomeTypeSelect.value;
+    incomeType = incomeTypeInput.value;
     if (isNaN(income)) {
         alert('Please enter a valid income.');
     } else {
         incomeModal.style.display = 'none';
-        incomeStartTime = 0; // Reset income start time when starting
+        incomeStartTime = 0;
         startStopwatch();
     }
 });
 
-// Event listener to open settings modal
-settingsIcon.addEventListener('click', () => {
-    settingsModal.style.display = 'block';
-    incomeEdit.value = income;
-    incomeTypeEdit.value = incomeType;
-});
-
-// Event listener to save new income without resetting earnings
-saveBtn.addEventListener('click', () => {
-    const newIncome = parseFloat(incomeEdit.value);
-    const newIncomeType = incomeTypeEdit.value;
-    
-    if (isNaN(newIncome) || newIncome <= 0) {
-        alert('Please enter a valid income.');
-    } else {
-        // Calculate the money earned so far with the previous income rate before changing it
-        calculateEarnings();
-
-        // Now update the income and income type
-        income = newIncome;
-        incomeType = newIncomeType;
-
-        // Reset the incomeStartTime to prevent retroactive changes
-        incomeStartTime = secondsElapsed;
-
-        settingsModal.style.display = 'none';
-    }
-});
-
-// Event listener to reset the stopwatch
-resetBtn.addEventListener('click', () => {
-    clearInterval(intervalId);
-    secondsElapsed = 0;
-    moneyEarned = 0;
-    earnedDisplay.textContent = '$0.00';
-    timeElapsedDisplay.textContent = '00:00:00';
-    title.textContent = '$0.00';
-    settingsModal.style.display = 'none';
-    incomeStartTime = 0; // Reset income start time
-    isRunning = false; // Reset running flag
-    startStopIcon.textContent = 'play_arrow'; // Set the icon back to 'play'
-});
-
-// Close modal on click outside content
-window.onclick = function(event) {
-    if (event.target === incomeModal) {
-        incomeModal.style.display = 'none';
-    }
-    if (event.target === settingsModal) {
-        settingsModal.style.display = 'none';
-    }
-};
-
-// Load saved state when the page loads
+// Load state on page load
 window.onload = function() {
     loadState();
-
-    // If no income has been set, show the income modal
     if (income === 0) {
         incomeModal.style.display = 'block';
-    } else {
-        // If income has been set, start the stopwatch and show the current state
-        startStopwatch();
     }
 };
 
-// Save state when the page is closed or refreshed
+// Save state on tab close
 window.onbeforeunload = function() {
     saveState();
 };
