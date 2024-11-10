@@ -21,10 +21,32 @@ const saveBtn = document.getElementById('saveBtn');
 const resetBtn = document.getElementById('resetBtn');
 const settingsIcon = document.getElementById('settingsIcon');
 
-// Open income modal on page load
-window.onload = function() {
-    incomeModal.style.display = 'block';
-};
+// Load saved state from localStorage
+function loadState() {
+    const savedIncome = localStorage.getItem('income');
+    const savedIncomeType = localStorage.getItem('incomeType');
+    const savedEarnings = localStorage.getItem('moneyEarned');
+    const savedElapsedTime = localStorage.getItem('secondsElapsed');
+    const savedIncomeStartTime = localStorage.getItem('incomeStartTime');
+
+    if (savedIncome && savedIncomeType && savedEarnings && savedElapsedTime) {
+        income = parseFloat(savedIncome);
+        incomeType = savedIncomeType;
+        moneyEarned = parseFloat(savedEarnings);
+        secondsElapsed = parseInt(savedElapsedTime);
+        incomeStartTime = parseInt(savedIncomeStartTime);
+        updateDisplay();
+    }
+}
+
+// Save state to localStorage
+function saveState() {
+    localStorage.setItem('income', income);
+    localStorage.setItem('incomeType', incomeType);
+    localStorage.setItem('moneyEarned', moneyEarned);
+    localStorage.setItem('secondsElapsed', secondsElapsed);
+    localStorage.setItem('incomeStartTime', incomeStartTime);
+}
 
 // Function to calculate hourly rate based on income type
 function getHourlyRate() {
@@ -44,6 +66,8 @@ function calculateEarnings() {
     // Update display
     earnedDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
     title.textContent = `$${moneyEarned.toFixed(2)}`;
+
+    saveState(); // Save state regularly
 }
 
 // Function to format time
@@ -61,6 +85,13 @@ function startStopwatch() {
         timeElapsedDisplay.textContent = formatTime(secondsElapsed);
         calculateEarnings();
     }, 1000);
+}
+
+// Update the display with current earnings and time
+function updateDisplay() {
+    earnedDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
+    timeElapsedDisplay.textContent = formatTime(secondsElapsed);
+    title.textContent = `$${moneyEarned.toFixed(2)}`;
 }
 
 // Event listener to start stopwatch when the user enters income
@@ -126,4 +157,22 @@ window.onclick = function(event) {
     if (event.target === settingsModal) {
         settingsModal.style.display = 'none';
     }
+};
+
+// Load saved state when the page loads
+window.onload = function() {
+    loadState();
+
+    // If no income has been set, show the income modal
+    if (income === 0) {
+        incomeModal.style.display = 'block';
+    } else {
+        // If income has been set, start the stopwatch and show the current state
+        startStopwatch();
+    }
+};
+
+// Save state when the page is closed or refreshed
+window.onbeforeunload = function() {
+    saveState();
 };
