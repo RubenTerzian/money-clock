@@ -23,7 +23,8 @@ body {
 
 /* Display for Money Earned */
 #earned_usd, #earned_uah {
-    font-size: 4rem;
+    font-size: 3rem;
+    margin-right: 20px;
 }
 
 /* Display for Time Elapsed */
