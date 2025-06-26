@@ -6,8 +6,10 @@ let incomeStartTime = 0; // Time when income was last updated
 let intervalId = null;
 let isRunning = false; // Flag to track if the stopwatch is running
 let lastSavedTime = 0; // To track when the page was last saved
+let UsdToUadRate = 42;
 
-const earnedDisplay = document.getElementById('earned');
+const earnedUsdDisplay = document.getElementById('earned_usd');
+const earnedUahDisplay = document.getElementById('earned_uah');
 const timeElapsedDisplay = document.getElementById('timeElapsed');
 const startStopIcon = document.getElementById('startStopIcon');
 const incomeInput = document.getElementById('incomeInput');
@@ -75,7 +77,8 @@ function loadState() {
 
 // Function to update the display
 function updateDisplay() {
-    earnedDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
+    earnedUsdDisplay.textContent = `$${moneyEarned.toFixed(2)}`;
+    earnedUahDisplay.textContent = `₴${(moneyEarned * *UsdToUadRate).toFixed(2)}`
     timeElapsedDisplay.textContent = formatTime(secondsElapsed);
     document.title = `$${moneyEarned.toFixed(2)}`;
 }
