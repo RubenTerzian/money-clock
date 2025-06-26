@@ -13,10 +13,16 @@ body {
     text-align: center;
 }
 
-/* Display for Money Earned */
 #earned {
-    font-size: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 10px;
+}
+
+/* Display for Money Earned */
+#earned_usd, #earned_uah {
+    font-size: 4rem;
 }
 
 /* Display for Time Elapsed */
